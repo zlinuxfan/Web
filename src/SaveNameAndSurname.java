@@ -1,6 +1,5 @@
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-
-
 /**
  * Created by kde on 14.07.16.
  */
@@ -8,8 +7,8 @@ import java.io.*;
 
 public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
     private int countDataRecord = 0;
-    private String patchFile = "/home/kde/Develop/Web";
-    private String fileName = "test.txt";
+    private String patchFile = "f:\\Web\\";
+    private String fileName = "data.txt";
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
 
@@ -23,45 +22,45 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
         name = request.getParameter("name");
         surname = request.getParameter("surname");
 
-        if (name == null || surname == null) {
-            System.out.println("error: data is null");
-        } else if (!saveData(name + " " + surname)) {
-            System.out.println("error: Data did not saved!");
+        if (!name.isEmpty()) {
+            if (!surname.isEmpty()) {
+                saveData(name + " " + surname);
+            } else {
+                throw new NullPointerException("Parametrs can`t be null.");
+            }
+        } else {
+            throw new NullPointerException("Parametrs can`t be null.");
         }
 
 /// for debug
+        debug(response);
+//
+    }
+
+    private void saveData(String data) throws IOException {
+
+        String fullFileName = patchFile + fileName;
+
+        File file = new File(fullFileName);
+            if (!file.exists()) {
+                if (file.createNewFile()) {
+                    throw new IOException("Can`t create file.");
+                }
+            }
+
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fullFileName, true));
+            bufferedWriter.write(data);
+            bufferedWriter.append('\n');
+            bufferedWriter.close();
+    }
+
+    /// for debug
+    private void debug(HttpServletResponse response) throws IOException {
         PrintWriter out = response.getWriter();
         out.println("<h4>Saves per session:" + countDataRecord + "ed.</h4>");
         out.println("<h4>Data saved:</h4>");
         out.println(readData());
         out.close();
-//
-    }
-
-    private boolean saveDataStream(String data) {
-
-        try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(patchFile + fileName, true))) {
-            bufferedOutputStream.write(data.getBytes());
-            bufferedOutputStream.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-        return true;
-    }
-
-    private boolean saveData(String data) {
-
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(patchFile + fileName, true))) {
-            bufferedWriter.write(data);
-            bufferedWriter.append('\n');
-            bufferedWriter.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-
-        return true;
     }
 
     private String readData() {
@@ -70,7 +69,6 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
         String lineData;
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(patchFile + fileName))) {
-
             while ((lineData = bufferedReader.readLine()) != null) {
                 outData += lineData + " ";
             }
@@ -80,4 +78,5 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
 
         return outData;
     }
+    ///
 }
