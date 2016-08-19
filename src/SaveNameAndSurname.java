@@ -48,10 +48,12 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
                 }
             }
 
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fullFileName, true));
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fullFileName, true))) {
             bufferedWriter.write(data);
             bufferedWriter.append('\n');
-            bufferedWriter.close();
+        } catch (IOException e) {
+            throw new IOException("Error write data.");
+        }
     }
 
     /// for debug
