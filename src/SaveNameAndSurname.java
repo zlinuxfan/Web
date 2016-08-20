@@ -1,5 +1,7 @@
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Properties;
+
 /**
  * Created by kde on 14.07.16.
  */
@@ -7,8 +9,6 @@ import java.io.*;
 
 public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
     private int countDataRecord = 0;
-    private String patchFile = "f:\\Web\\";
-    private String fileName = "data.txt";
 
     protected void doPost(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {
 
@@ -18,7 +18,7 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
         String name;
         String surname;
 
-        countDataRecord ++;
+        this.countDataRecord ++;
         name = request.getParameter("name");
         surname = request.getParameter("surname");
 
@@ -39,11 +39,11 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
 
     private void saveData(String data) throws IOException {
 
-        String fullFileName = patchFile + fileName;
+        String fullFileName = getFullFileName();
 
         File file = new File(fullFileName);
             if (!file.exists()) {
-                if (file.createNewFile()) {
+                if (!file.createNewFile()) {
                     throw new IOException("Can`t create file.");
                 }
             }
@@ -56,10 +56,20 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
         }
     }
 
+    private String getFullFileName() {
+        Properties fileProperties = new Properties();
+        try (FileInputStream fileInputStream = new FileInputStream("f:\\Web\\src\\resources\\config.properties")) {
+            fileProperties.load(fileInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileProperties.getProperty("filePatch") + fileProperties.getProperty("fileName");
+    }
+
     /// for debug
     private void debug(HttpServletResponse response) throws IOException {
         PrintWriter out = response.getWriter();
-        out.println("<h4>Saves per session:" + countDataRecord + "ed.</h4>");
+        out.println("<h4>Saves per session:" + this.countDataRecord + "ed.</h4>");
         out.println("<h4>Data saved:</h4>");
         out.println(readData());
         out.close();
@@ -70,7 +80,7 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
         String outData = "";
         String lineData;
 
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(patchFile + fileName))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(getFullFileName()))) {
             while ((lineData = bufferedReader.readLine()) != null) {
                 outData += lineData + " ";
             }
