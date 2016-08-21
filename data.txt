@@ -1,6 +1,3 @@
-serj15 nimble15
-serj25 nimble25
-serj35 nimble35
+serj0 nimble0
 serj1 nimble1
-serj1 nimble1
-serj1 nimble1
+serj2 nimble2
