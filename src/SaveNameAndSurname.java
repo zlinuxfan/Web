@@ -32,9 +32,7 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
             throw new NullPointerException("Parametrs can`t be null.");
         }
 
-/// for debug
-        debug(response);
-//
+        writeResponse(response);
     }
 
     private void saveData(String data) throws IOException {
@@ -66,12 +64,9 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
         return fileProperties.getProperty("filePatch") + fileProperties.getProperty("fileName");
     }
 
-    /// for debug
-    private void debug(HttpServletResponse response) throws IOException {
+    private void writeResponse(HttpServletResponse response) throws IOException {
         PrintWriter out = response.getWriter();
-        out.println("<h4>Saves per session:" + this.countDataRecord + "ed.</h4>");
-        out.println("<h4>Data saved:</h4>");
-        out.println(readData());
+        out.println("Data saved");
         out.close();
     }
 
