@@ -1,3 +1,0 @@
-serj0 nimble0
-serj1 nimble1
-serj2 nimble2
