@@ -1,1 +1,11 @@
 build/
+.metadata
+.recommenders
+NandS/bin
+NandS/bin/log
+NandS/bin/.metadata
+NandS/bin/.recommenders
+NandS/dist
+NandS/log
+
+
