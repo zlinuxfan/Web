@@ -1,0 +1,44 @@
+<project name="Web" basedir="..">
+
+	<path id="classpath">
+	     <fileset dir="lib" includes="servlet-api.jar"/>
+	</path>
+	
+	<target name="clean">
+	    <echo>Cleaning the ${build.dir}</echo>
+	    <delete dir="build"/>
+	</target>
+
+	<target name="init" depends="clean">
+    	<echo>Creating the build directory</echo>
+    	<mkdir dir="build/WEB-INF/classes"/>
+    	<mkdir dir="build/WEB-INF/lib"/>
+	</target>
+
+	<target name="compile" depends="init">
+	    <echo>Compile the source files</echo>
+	    <javac srcdir="src" destdir="build/WEB-INF/classes">
+	        <classpath refid="classpath"/>
+	    </javac>
+	</target>
+	
+	<target name="copy" depends="compile">
+	    <copy todir="build/WEB-INF">
+	        <fileset dir="etc"/>
+	    </copy>
+	    <copy todir="build">
+	        <fileset dir="web"/>
+	    </copy>
+	    <copy todir="build/WEB-INF/lib">
+	        <fileset dir="lib"/>
+	    </copy>
+	</target>
+	
+	<target name="war" depends="copy">
+	    <echo>Building the war file</echo>
+	    <war destfile="/home/develop/tomcat_9/webapps/webApp.war" webxml="build/WEB-INF/web.xml">
+	        <fileset dir="build"/>
+	    </war>
+	</target>
+	
+</project>

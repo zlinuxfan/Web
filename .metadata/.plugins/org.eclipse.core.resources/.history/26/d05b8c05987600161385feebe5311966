@@ -1,0 +1,7 @@
+root.dir=..
+lib.dir=..
+src.dir=..
+conf.dir=etc
+web.content=web
+project.name=WebApp
+build.dir=build
