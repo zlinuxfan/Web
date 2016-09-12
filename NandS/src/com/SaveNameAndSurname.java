@@ -4,6 +4,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Date;
 import java.util.Properties;
 
 
@@ -24,21 +25,28 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String name;
         String surname;
+        boolean errorStatus = true;
 
         name = request.getParameter("name");
         surname = request.getParameter("surname");
      
-        if (!name.isEmpty()) {
-            if (!surname.isEmpty()) {
-                 saveData(name + " " + surname);
-            } else {
-                throw new NullPointerException("Parametrs can`t be null...");
-            }
-        } else {
-            throw new NullPointerException("Parametrs can`t be null.");
-        }
+        try {        
+	        if (!name.isEmpty()) {
+	            if (!surname.isEmpty()) {
+	                 saveData(name + " " + surname);
+	            } else {
+	                throw new NullPointerException("Parametrs can`t be null...");
+	            }
+	        } else {
+	            throw new NullPointerException("Parametrs can`t be null.");
+	        }
+        } catch (NullPointerException e) {
+        	Date date = new Date();
+			saveLog(date.toString() + ": Parametrs name and surname can`t be null." + " Name: " + name + ", surname: " + surname);
+			errorStatus = false;
+		}
 
-        writeResponse(response);
+        writeResponse(response, errorStatus);
     }
 
     private void saveData(String data) throws IOException {
@@ -57,7 +65,7 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
             bufferedWriter.write(data);
             bufferedWriter.append('\n');
         } catch (IOException e) {
-            throw new IOException("Error write data.");
+        	saveLog("Error write!. Parametrs [" + data + "] do not save.");
         }
     }
 
@@ -73,10 +81,33 @@ public class SaveNameAndSurname extends javax.servlet.http.HttpServlet {
         return fileProperties.getProperty("fileName");
     }
 
-    private void writeResponse(HttpServletResponse response) throws IOException {
+    private void writeResponse(HttpServletResponse response, boolean errorStatus) throws IOException {
         PrintWriter out = response.getWriter();
-        out.println("Data saved");
+        if (errorStatus) {
+        	out.println("Data saved");
+        } else {
+        	out.println("Error. Data did not saved");
+        }
         
         out.close();
+    }
+    
+    private void saveLog(String error) throws IOException {
+    	String fullFileName = System.getProperty("user.dir") + "/log";
+        
+        File file = new File(fullFileName);
+            if (!file.exists()) {
+            	// If file not exists, create file System.getProperty("user.dir") + "/fileName";
+                if (!file.createNewFile()) {
+                    throw new IOException("Can`t create log file.");
+                }
+            }
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fullFileName, true))) {
+            bufferedWriter.write(error);
+            bufferedWriter.append('\n');
+        } catch (IOException e) {
+            throw new IOException("Error write log.");
+        }
     }
 }
